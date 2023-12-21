@@ -31,6 +31,11 @@ class CaptureWindow(tk.Frame):
         # カメラ映像の表示
         self.camera_label = Label(self)  # カメラ映像を表示するLabelウィジェット
         self.camera_label.place(x=1050, y=350)
+
+        # 指示画像の表示
+        self.instraction_img = Label(self)
+        self.instraction_img.place(x=350, y=350)
+
         # 最初のカメラをデフォルトとして使用
         self.capture = cv2.VideoCapture(self.cameras[0][0])
         # カメラ映像の更新
@@ -41,6 +46,17 @@ class CaptureWindow(tk.Frame):
         self.bg_image = PhotoImage(file=os.path.join(self.current_dir, const.BG_IMAGE_PATH))
         bg_label = Label(self, image=self.bg_image)
         bg_label.place(relwidth=1, relheight=1)
+
+    def insert_newlines(self, text, delimiter="."):
+        """
+        指定されたデリミター（デフォルトはピリオド）でテキストを分割し、
+        各部分を改行で結合して返します。
+        """
+        parts = text.split(delimiter)
+        # デリミターを各部分の末尾に再追加（最後の部分を除く）
+        processed_parts = [part + delimiter for part in parts[:-1]]
+        processed_parts.append(parts[-1])  # 最後の部分をそのまま追加
+        return "\n".join(processed_parts)
 
     def setup_display_explanation(self):
         if not hasattr(self, "menu_label"):
@@ -57,20 +73,24 @@ class CaptureWindow(tk.Frame):
         # ラベルのテキストを更新します
         self.menu_label.config(text=const.DISPLAY_POSE_NUMBER[self.i])
 
+        # ラベルのテキストを設定する際に、新しい関数を使用
         if not hasattr(self, "explanation_label"):
             self.explanation_label = Label(
                 self,
                 bg=const.DISPLAY_EXPLANATION_BG,
                 fg=const.DISPLAY_EXPLANATION_FG,
                 font=const.DISPLAY_EXPLANATION_2_FONT,
-                # width=50  # 必要に応じて幅を指定
+                # widthオプションはコメントアウト
             )
             self.explanation_label.pack(
-                pady=(const.DISPLAY_EXPLANATION_MENU_LABEL_IPADY + 50, 0),  # 上のパディングを調整
-                ipadx=10,  # 内部水平パディングを減らす
-                # fill="x"  # 必要に応じて水平方向にのみ拡張
+                pady=(const.DISPLAY_EXPLANATION_MENU_LABEL_IPADY + 50, 0),
+                ipadx=10,
+                # fillオプションはコメントアウト
             )
-        self.explanation_label.config(text=const.DISPLAY_EXPLANATION_NUMBER[self.i])
+
+        # テキストを改行で処理してから設定
+        processed_text = self.insert_newlines(const.DISPLAY_EXPLANATION_NUMBER[self.i])
+        self.explanation_label.config(text=processed_text)
 
     def setup_buttons(self):
         # Captureボタンのセットアップ
@@ -108,6 +128,9 @@ class CaptureWindow(tk.Frame):
         photo = ImageTk.PhotoImage(image=image)
         self.camera_label.config(image=photo)
         self.camera_label.image = photo
+
+    def display_instraction_img(self):
+        cv2.imread(os.path.join(self.current_dir, const.INSTRACTION_IMAGE_PATH))
 
     def capture_image(self):
         self.create_directory("capture_img")
