@@ -1,15 +1,13 @@
 import tkinter as tk
-from tkinter import Button, Label, PhotoImage, simpledialog
+from tkinter import Button, Label, PhotoImage
 from modules.util.mediapipe_hand import HandLandmarkDetector
 from PIL import Image, ImageTk
 import modules.window.const as const
 import modules.util.const_logger as const_logger
-import modules.util.camera_setup as camera_setup
 import os
 import cv2
 import time
 import mediapipe as mp
-import numpy as np
 import csv
 
 
@@ -21,7 +19,7 @@ class DetectionWindow(tk.Frame):
 
         # 検出器のセットアップ
         self.hand_detector = HandLandmarkDetector()
-        
+
         # 画像の保存先
         self.save_path = save_path
         self.current_dir = os.getcwd()
@@ -52,9 +50,8 @@ class DetectionWindow(tk.Frame):
         ).place(relx=1.0, rely=1.0, x=-const.CAPTURE_BUTTON_PADX, y=-const.CAPTURE_BUTTON_PADY, anchor=tk.SE)
 
     def display_detection_result(self, i):
-        # Save poses as csv
-        # print(poses.shape)
-        os.makedirs("output", exist_ok=True)
+        self.create_directory("output")
+        self.create_directory("detection_img")
 
         # カメラ映像の表示
         self.detection_label = Label(self)  # カメラ映像を表示するLabelウィジェット
@@ -67,33 +64,10 @@ class DetectionWindow(tk.Frame):
 
         if detection_result.multi_hand_landmarks:
             for hand_no, hand_landmarks in enumerate(detection_result.multi_hand_landmarks):
-                # landmarks.csvが存在するかチェック
-                file_exists = os.path.exists(f"output/landmarks.csv")
-
-                with open(f"output/landmarks.csv", "a", newline="") as f:
-                    csv_writer = csv.writer(f)
-
-                    if not file_exists:
-                        # ヘッダー行の生成と書き込み
-                        axis = ["x", "y", "z"]
-                        cols = ["Joint_" + str(col) + "_" + axis[x] for col in range(21) for x in range(3)]
-                        header = ["Pose"] + cols
-                        csv_writer.writerow(header)
-
-                    # データ行の書き込み
-                    row_data = [i]  # 最初の列にポーズ番号を追加
-                    for k in range(21):
-                        row_data.extend(
-                            [
-                                hand_landmarks.landmark[k].x,
-                                hand_landmarks.landmark[k].y,
-                                hand_landmarks.landmark[k].z,
-                            ]
-                        )
-                    csv_writer.writerow(row_data)
+                self.write_landmark_data_to_csv(i, hand_landmarks)
                 self.mp_drawing.draw_landmarks(self.detection_img, hand_landmarks, self.mp_hands.HAND_CONNECTIONS)
 
-        # Tkinerで表示可能な形式に変換
+        # Tkinterで表示可能な形式に変換
         image = Image.fromarray(self.detection_img)
         photo = ImageTk.PhotoImage(image=image)
 
@@ -102,14 +76,42 @@ class DetectionWindow(tk.Frame):
         self.detection_label.image = photo  # 参照を保持
 
         detection_dir = os.path.join(self.current_dir, "detection_img")
-        if not os.path.exists(detection_dir):
-            os.mkdir(detection_dir)
-
         filename = f"detection_pose{int(i)}.jpg"
         self.save_path = os.path.join(detection_dir, filename)
         cv2.imwrite(self.save_path, cv2.cvtColor(self.detection_img, cv2.COLOR_RGB2BGR))
 
         self.j = i + 1
+
+    def create_directory(self, dir_name):
+        if not os.path.exists(dir_name):
+            os.mkdir(dir_name)
+
+    def write_landmark_data_to_csv(self, pose_number, hand_landmarks):
+        file_path = f"output/landmarks.csv"
+        file_exists = os.path.exists(file_path)
+        with open(file_path, "a", newline="") as f:
+            csv_writer = csv.writer(f)
+            if not file_exists:
+                self.write_csv_header(csv_writer)
+            self.write_csv_data_row(csv_writer, pose_number, hand_landmarks)
+
+    def write_csv_header(self, csv_writer):
+        axis = ["x", "y", "z"]
+        cols = ["Joint_" + str(col) + "_" + axis[x] for col in range(21) for x in range(3)]
+        header = ["Pose"] + cols
+        csv_writer.writerow(header)
+
+    def write_csv_data_row(self, csv_writer, pose_number, hand_landmarks):
+        row_data = [pose_number]
+        for k in range(21):
+            row_data.extend(
+                [
+                    hand_landmarks.landmark[k].x,
+                    hand_landmarks.landmark[k].y,
+                    hand_landmarks.landmark[k].z,
+                ]
+            )
+        csv_writer.writerow(row_data)
 
     def go_to_capture_window(self):
         self.master.show_capture_window(self.j)

@@ -3,6 +3,8 @@ from modules.window.capture_window import CaptureWindow
 from modules.window.detection_window import DetectionWindow
 import modules.util.const_logger as const_logger
 from modules.util.logger import Logger
+import cv2
+import modules.util.camera_setup as camera_setup
 
 
 class MainWindow(tk.Tk):
@@ -17,6 +19,11 @@ class MainWindow(tk.Tk):
         # 初期ウインドウの表示
         self.current_frame = None
         self.show_capture_window(i=0)
+        self.camera = self.setup_camera()
+
+    def setup_camera(self):
+        self.cameras = camera_setup.get_cameras()
+        return self.cameras[0][0]
 
     def on_close(self):
         """ウィンドウを閉じる際の処理"""

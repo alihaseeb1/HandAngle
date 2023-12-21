@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import Button, Label, PhotoImage, simpledialog
+from tkinter import Button, Label, PhotoImage, Listbox
 from modules.util.mediapipe_hand import HandLandmarkDetector
 from PIL import Image, ImageTk
 import modules.window.const as const
@@ -20,7 +20,6 @@ class CaptureWindow(tk.Frame):
 
         # 検出器のセットアップ
         self.hand_detector = HandLandmarkDetector()
-        self.detect_hands = False
 
         # GUIセットアップ
         self.setup_background()
@@ -30,11 +29,9 @@ class CaptureWindow(tk.Frame):
 
         # カメラ映像の表示
         self.camera_label = Label(self)  # カメラ映像を表示するLabelウィジェット
-        self.camera_label.place(x=800, y=150)
-
+        self.camera_label.place(x=1050, y=350)
         # 最初のカメラをデフォルトとして使用
         self.capture = cv2.VideoCapture(self.cameras[0][0])
-
         # カメラ映像の更新
         self.update_camera()
 
@@ -68,46 +65,60 @@ class CaptureWindow(tk.Frame):
             height=const.CAPTURE_BUTTON_HEIGHT,
         ).place(relx=1.0, rely=1.0, x=-const.CAPTURE_BUTTON_PADX, y=-const.CAPTURE_BUTTON_PADY, anchor=tk.SE)
 
+        # Settingボタンのセットアップ
+        Button(
+            self,
+            text="Setting",
+            command=self.open_setting,
+            font=const.CAPTURE_BUTTON_FONT,
+            width=const.CAPTURE_BUTTON_WIDTH,
+            height=const.CAPTURE_BUTTON_HEIGHT,
+        ).place(relx=0.8, rely=1.0, x=-const.CAPTURE_BUTTON_PADX, y=-const.CAPTURE_BUTTON_PADY, anchor=tk.SE)
+
     def update_camera(self):
-        # カメラからフレームを読み込む
         ret, self.frame = self.capture.read()
         if ret:
-            if self.detect_hands:
-                # 手のランドマーク検出
-                results = self.hand_detector.detect(self.frame)
-                if results.multi_hand_landmarks:
-                    for hand_landmarks in results.multi_hand_landmarks:
-                        self.hand_detector.mp_drawing.draw_landmarks(
-                            self.frame, hand_landmarks, self.hand_detector.mp_hands.HAND_CONNECTIONS
-                        )
-
-            # OpenCVのBGR画像をRGBに変換
-            frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
-            # Tkinterで表示可能な形式に変換
-            image = Image.fromarray(frame)
-            photo = ImageTk.PhotoImage(image=image)
-
-            # Labelウィジェットに画像を設定
-            self.camera_label.config(image=photo)
-            self.camera_label.image = photo  # 参照を保持
-
-        # 次のフレームを取得するために自身を再呼び出し
+            self.process_camera_frame()
         self.after(10, self.update_camera)
 
+    def process_camera_frame(self):
+        self.display_camera_frame()
+
+    def display_camera_frame(self):
+        frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
+        image = Image.fromarray(frame)
+        photo = ImageTk.PhotoImage(image=image)
+        self.camera_label.config(image=photo)
+        self.camera_label.image = photo
+
     def capture_image(self):
-        # capture_imgディレクトリのパス
-        capture_dir = os.path.join(self.current_dir, "capture_img")
-
-        # ディレクトリが存在しない場合は作成
-        if not os.path.exists(capture_dir):
-            os.makedirs(capture_dir)
-
-        # ファイル名は現在のタイムスタンプを使用
+        self.create_directory("capture_img")
         filename = f"capture_Pose{int(self.i)}.jpg"
-        self.save_path = os.path.join(capture_dir, filename)
+        self.save_path = os.path.join(self.current_dir, "capture_img", filename)
         cv2.imwrite(self.save_path, self.frame)
 
-        self.master.show_detection_window(self.save_path, self.i)
+    def create_directory(self, dir_name):
+        dir_path = os.path.join(self.current_dir, dir_name)
+        if not os.path.exists(dir_path):
+            os.makedirs(dir_path)
 
     def setup_camera(self):
         self.cameras = camera_setup.get_cameras()
+        return self.cameras[0][0]
+
+    def open_setting(self):
+        # カメラ設定ウィンドウの作成
+        setting_window = tk.Toplevel(self)
+        setting_window.title("Camera Settings")
+
+        # 使用可能なカメラの一覧を取得
+        cameras = camera_setup.get_cameras()
+
+        # カメラの一覧を表示するListboxの作成
+        camera_listbox = Listbox(setting_window)
+        for cam_id, cam_name in cameras:
+            camera_listbox.insert(tk.END, f"Camera {cam_id}: {cam_name}")
+        camera_listbox.pack()
+
+        # 選択ボタンの作成
+        Button(setting_window, text="Select", command=lambda: self.select_camera(camera_listbox, cameras)).pack()
