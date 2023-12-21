@@ -1,0 +1,55 @@
+﻿0,pic_num,action_num,save_pic,pose_name,,frame,finger_num,basic_axis_o,basic_axis_v,moving_axis_o,moving_axis_v,direction_index,direction
+1,0,0,1,wrist_,flexion_,0,,0,9,,,0,"Put your hand on the table, your thumb on the upper side. Stretch your fingers and get relaxed."
+2,1,0,1,wrist_,flexion_,1,,,,0,9,1,Get your wrist fixed and bend your hand to the direction of your palm as much as possible.
+3,2,1,1,wrist_,extension_,0,,0,9,,,2,"Put your hand on the table, your thumb on the upper side. Stretch your fingers and get relaxed."
+4,3,1,1,wrist_,extension_,1,,,,0,9,3,Get your wrist fixed and bend your hand to the direction of your back of hand as much as possible.
+5,4,2,1,wrist_,radial_deviation_,0,,0,9,,,4,"Put your hand on the table, your palm down. Stretch your fingers and get relaxed. "
+6,5,2,1,wrist_,radial_deviation_,1,,,,0,9,5,Get your wrist fixed. Bend your hand to the direction of your thumb as much as possible.
+7,6,3,1,wrist_,ulnar_deviation_,0,,0,9,,,6,"Put your hand on the table, your palm down. Stretch your fingers and get relaxed. "
+8,7,3,1,wrist_,ulnar_deviation_,1,,,,0,9,7,Get your wrist fixed. Bend your hand to the direction of your little finger as much as possible.
+9,,4,0,thumb_,radial_abduction,0,,,,,,8,"Put your hand on the table, your palm down. Stretch your fingers and get relaxed. "
+10,8,4,1,thumb_,radial_abduction,1,,5,8,1,4,9,Get your fingers fixed except for your thumb. Bend your thumb away from your index finger as much as you can.
+11,,5,0,thumb_,ulnar_adduction,0,,,,,,10,"Put your hand on the table, your palm down. Let your thumb and index finger be aparted. Stretch your fingers and get relaxed. "
+12,9,5,1,thumb_,ulnar_adduction,1,,5,8,1,4,11,Get your fingers fixed except for your thumb. Bend your thumb to match your index finger as much as you can.
+13,,6,0,thumb_,palmar_abduction,0,,,,,,12,"Put your hand on the table, your thumb on the upper side. Stretch your fingers and get relaxed."
+14,10,6,1,thumb_,palmar_abduction,1,,5,8,1,4,13,Get your fingers fixed except for your thumb. Bend your thumb away from your palm as much as you can.
+15,,7,0,thumb_,palmar_adduction,0,,,,,,14,"Put your hand on the table, your thumb on the upper side. Let your thumb and your palm be aparted. Stretch your fingers and get relaxed."
+16,11,7,1,thumb_,palmar_adduction,1,,5,8,1,4,15,Get your fingers fixed except for your thumb. Bend your thumb to match your palm as much as you can.
+17,,8,0,thumb_,flexion_mcp,0,,,,,,16,"Put your hand on the table, your palm on the upper side. Stretch your fingers and get relaxed."
+18,12,8,1,thumb_,flexion_mcp,1,,1,2,2,3,17,Get your fingers fixed except for your thumb. Bend your thumb to the middle of your hand as much as you can.
+19,,9,0,thumb_,extension_mcp,0,,,,,,18,"Put your hand on the table, your palm on the upper side. Stretch your fingers and get relaxed."
+20,13,9,1,thumb_,extension_mcp,1,,1,2,2,3,19,Get your fingers fixed except for your thumb. Stretch your thumb to apart it from your index finger as much as you can.
+21,,10,0,thumb_,flexion_ip,0,,,,,,20,"Put your hand on the table, your palm on the upper side. Stretch your fingers and get relaxed."
+22,14,10,1,thumb_,flexion_ip,1,,2,3,3,4,21,Get your fingers fixed except for your thumb. Bend the tip of your thumb to the middle of your hand as much as you can.
+23,,11,0,thumb_,extension_ip,0,,,,,,22,"Put your hand on the table, your palm on the upper side. Stretch your fingers and get relaxed."
+24,15,11,1,thumb_,extension_ip,1,,2,3,3,4,23,Get your fingers fixed except for your thumb. Stretch the tip of your thumb to apart it from your index finger as much as you can.
+25,,12,0,finger_,flexion_mcp_,0,,,,,,24,"Put your hand on the table, your thumb on the upper side. Stretch your fingers and get relaxed."
+26,16,12,1,finger_,flexion_mcp_,1,0,0,9,5,6,25,"Get your palm fixed. Keep your fingers stretched and bend your fingers to the direction of your palm as much as you can, except for your thumb."
+27,16,12,,finger_,flexion_mcp_,1,1,0,9,9,10,,
+28,16,12,,finger_,flexion_mcp_,1,2,0,9,13,14,,
+29,16,12,,finger_,flexion_mcp_,1,3,0,9,17,18,,
+30,,13,0,finger_,extention_mcp_,0,,,,,,26,"Put your hand on the table, your thumb on the upper side. Stretch your fingers and get relaxed."
+31,17,13,1,finger_,extention_mcp_,1,0,0,9,5,6,27,"Get your palm fixed. Bend your fingers to the direction of your back of hand as much as you can, except for your thumb."
+32,17,13,,finger_,extention_mcp_,1,1,0,9,9,10,,
+33,17,13,,finger_,extention_mcp_,1,2,0,9,13,14,,
+34,17,13,,finger_,extention_mcp_,1,3,0,9,17,18,,
+35,,14,0,finger_,flexion_pip_,0,,,,,,28,"Put your hand on the table, your thumb on the upper side. Stretch your fingers and get relaxed."
+36,18,14,1,finger_,flexion_pip_,1,0,5,6,6,7,29,"Get your palm fixed. Keep your finger tips loosely stretched and bend your fingers to the direction of your palm as much as you can, except for your thumb."
+37,18,14,,finger_,flexion_pip_,1,1,9,10,10,11,,
+38,18,14,,finger_,flexion_pip_,1,2,13,14,14,15,,
+39,18,14,,finger_,flexion_pip_,1,3,17,18,18,19,,
+40,,15,0,finger_,extension_pip_,0,,,,,,30,"Put your hand on the table, your thumb on the upper side. Stretch your fingers and get relaxed."
+41,19,15,1,finger_,extension_pip_,1,0,5,6,6,7,31,"Get your palm fixed. Stretch your finger tips as much as you can, except for your thumb."
+42,19,15,,finger_,extension_pip_,1,1,9,10,10,11,,
+43,19,15,,finger_,extension_pip_,1,2,13,14,14,15,,
+44,19,15,,finger_,extension_pip_,1,3,17,18,18,19,,
+45,,16,0,finger_,flexion_dip_,0,,,,,,32,"Put your hand on the table, your thumb on the upper side. Stretch your fingers and get relaxed."
+46,20,16,1,finger_,flexion_dip_,1,0,6,7,7,8,33,"Get your palm fixed. Bend your finger tips to the direction of your palm as much as you can, except for your thumb."
+47,20,16,,finger_,flexion_dip_,1,1,10,11,11,12,,
+48,20,16,,finger_,flexion_dip_,1,2,14,15,15,16,,
+49,20,16,,finger_,flexion_dip_,1,3,18,19,19,20,,
+50,,17,0,finger_,extension_dip_,0,,,,,,34,"Put your hand on the table, your thumb on the upper side. Stretch your fingers and get relaxed."
+51,21,17,1,finger_,extension_dip_,1,0,6,7,7,8,35,"Get your palm fixed. Stretch your finger tips as much as you can, except for your thumb."
+52,21,17,,finger_,extension_dip_,1,1,10,11,11,12,,
+53,21,17,,finger_,extension_dip_,1,2,14,15,15,16,,
+54,21,17,,finger_,extension_dip_,1,3,18,19,19,20,,

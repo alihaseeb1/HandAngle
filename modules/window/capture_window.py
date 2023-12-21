@@ -8,6 +8,7 @@ import modules.util.camera_setup as camera_setup
 import os
 import cv2
 import time
+import csv
 
 
 class CaptureWindow(tk.Frame):
@@ -42,17 +43,34 @@ class CaptureWindow(tk.Frame):
         bg_label.place(relwidth=1, relheight=1)
 
     def setup_display_explanation(self):
-        # 画面説明のセットアップ
-        menu_label = Label(
-            self,
-            text=const.DISPLAY_EXPLANATION[self.i],
-            bg=const.DISPLAY_EXPLANATION_BG,
-            fg=const.DISPLAY_EXPLANATION_FG,
-            font=const.DISPLAY_EXPLANATION_FONT,
-        )
-        menu_label.pack(
-            pady=const.DISPLAY_EXPLANATION_MENU_LABEL_IPADY, ipadx=const.DISPLAY_EXPLANATION_MENU_LABEL_IPADX
-        )
+        if not hasattr(self, "menu_label"):
+            # ラベルがまだ作成されていない場合、新しく作成します
+            self.menu_label = Label(
+                self,
+                bg=const.DISPLAY_EXPLANATION_BG,
+                fg=const.DISPLAY_EXPLANATION_FG,
+                font=const.DISPLAY_EXPLANATION_FONT,
+            )
+            self.menu_label.pack(
+                pady=const.DISPLAY_EXPLANATION_MENU_LABEL_IPADY, ipadx=const.DISPLAY_EXPLANATION_MENU_LABEL_IPADX
+            )
+        # ラベルのテキストを更新します
+        self.menu_label.config(text=const.DISPLAY_POSE_NUMBER[self.i])
+
+        if not hasattr(self, "explanation_label"):
+            self.explanation_label = Label(
+                self,
+                bg=const.DISPLAY_EXPLANATION_BG,
+                fg=const.DISPLAY_EXPLANATION_FG,
+                font=const.DISPLAY_EXPLANATION_2_FONT,
+                # width=50  # 必要に応じて幅を指定
+            )
+            self.explanation_label.pack(
+                pady=(const.DISPLAY_EXPLANATION_MENU_LABEL_IPADY + 50, 0),  # 上のパディングを調整
+                ipadx=10,  # 内部水平パディングを減らす
+                # fill="x"  # 必要に応じて水平方向にのみ拡張
+            )
+        self.explanation_label.config(text=const.DISPLAY_EXPLANATION_NUMBER[self.i])
 
     def setup_buttons(self):
         # Captureボタンのセットアップ
@@ -96,6 +114,8 @@ class CaptureWindow(tk.Frame):
         filename = f"capture_Pose{int(self.i)}.jpg"
         self.save_path = os.path.join(self.current_dir, "capture_img", filename)
         cv2.imwrite(self.save_path, self.frame)
+        self.i += 1
+        self.setup_display_explanation()
 
     def create_directory(self, dir_name):
         dir_path = os.path.join(self.current_dir, dir_name)
