@@ -68,15 +68,15 @@ DISPLAY_EXPLANATION_NUMBER = [
     "Get your fingers fixed except for your thumb. Stretch the tip of your thumb to apart it from your index finger as much as you can.",
     "Put your hand on the table, your thumb on the upper side. Stretch your fingers and get relaxed.",
     "Get your palm fixed. Keep your fingers stretched and bend your fingers to the direction of your palm as much as you can, except for your thumb.",
-    "Put your hand on the table, your thumb on the upper side. Stretch your fingers and get relaxed."
+    "Put your hand on the table, your thumb on the upper side. Stretch your fingers and get relaxed.",
     "Get your palm fixed. Bend your fingers to the direction of your back of hand as much as you can, except for your thumb.",
     "Put your hand on the table, your thumb on the upper side. Stretch your fingers and get relaxed.",
     "Get your palm fixed. Keep your finger tips loosely stretched and bend your fingers to the direction of your palm as much as you can, except for your thumb.",
-    "Put your hand on the table, your thumb on the upper side. Stretch your fingers and get relaxed."
+    "Put your hand on the table, your thumb on the upper side. Stretch your fingers and get relaxed.",
     "Get your palm fixed. Stretch your finger tips as much as you can, except for your thumb.",
     "Put your hand on the table, your thumb on the upper side. Stretch your fingers and get relaxed.",
     "Get your palm fixed. Bend your finger tips to the direction of your palm as much as you can, except for your thumb.",
-    "Put your hand on the table, your thumb on the upper side. Stretch your fingers and get relaxed."
+    "Put your hand on the table, your thumb on the upper side. Stretch your fingers and get relaxed.",
     "Get your palm fixed. Stretch your finger tips as much as you can, except for your thumb.",
 ]
 
@@ -84,7 +84,7 @@ DISPLAY_EXPLANATION_NUMBER = [
 DISPLAY_EXPLANATION_BG = "#ffffff"
 DISPLAY_EXPLANATION_FG = "#000000"
 DISPLAY_EXPLANATION_FONT = ("Times New Roman", 40)
-DISPLAY_EXPLANATION_2_FONT = ("Times New Roman", 30)
+DISPLAY_EXPLANATION_2_FONT = ("Times New Roman", 25)
 DISPLAY_EXPLANATION_MENU_LABEL_IPADY = 10
 DISPLAY_EXPLANATION_MENU_LABEL_IPADX = 250
 

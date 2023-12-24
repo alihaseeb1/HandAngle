@@ -18,6 +18,8 @@ class CaptureWindow(tk.Frame):
         self.master.logger.info(const_logger.CAPTURE_WINDOW_START_MSG)
         self.current_dir = os.getcwd()
         self.i = i
+        self.right_hand = True
+        self.left_hand = True
 
         # 検出器のセットアップ
         self.hand_detector = HandLandmarkDetector()
@@ -30,14 +32,17 @@ class CaptureWindow(tk.Frame):
 
         # カメラ映像の表示
         self.camera_label = Label(self)  # カメラ映像を表示するLabelウィジェット
-        self.camera_label.place(x=1050, y=350)
+        self.camera_label.place(x=1050, y=400)
 
         # 指示画像の表示
-        self.instraction_img = Label(self)
-        self.instraction_img.place(x=350, y=350)
+        self.instraction_label = Label(self)
+        self.instraction_label.place(x=250, y=400)
 
         # 最初のカメラをデフォルトとして使用
         self.capture = cv2.VideoCapture(self.cameras[0][0])
+
+        self.display_instraction_img()
+
         # カメラ映像の更新
         self.update_camera()
 
@@ -51,12 +56,21 @@ class CaptureWindow(tk.Frame):
         """
         指定されたデリミター（デフォルトはピリオド）でテキストを分割し、
         各部分を改行で結合して返します。
+        ただし、次の文が実際に存在する場合のみ、改行を追加します。
         """
         parts = text.split(delimiter)
-        # デリミターを各部分の末尾に再追加（最後の部分を除く）
-        processed_parts = [part + delimiter for part in parts[:-1]]
-        processed_parts.append(parts[-1])  # 最後の部分をそのまま追加
-        return "\n".join(processed_parts)
+        processed_parts = []
+
+        for i, part in enumerate(parts[:-1]):
+            part = part.strip()
+            # 次の部分が存在し、非空である場合にのみ、改行を追加
+            if part and (i + 1 < len(parts) and parts[i + 1].strip()):
+                processed_parts.append(part + delimiter + "\n")
+            else:
+                processed_parts.append(part + delimiter)
+        processed_parts.append(parts[-1].strip())  # 最後の部分をそのまま追加
+
+        return "".join(processed_parts)
 
     def setup_display_explanation(self):
         if not hasattr(self, "menu_label"):
@@ -70,27 +84,54 @@ class CaptureWindow(tk.Frame):
             self.menu_label.pack(
                 pady=const.DISPLAY_EXPLANATION_MENU_LABEL_IPADY, ipadx=const.DISPLAY_EXPLANATION_MENU_LABEL_IPADX
             )
-        # ラベルのテキストを更新します
-        self.menu_label.config(text=const.DISPLAY_POSE_NUMBER[self.i])
 
-        # ラベルのテキストを設定する際に、新しい関数を使用
         if not hasattr(self, "explanation_label"):
             self.explanation_label = Label(
                 self,
                 bg=const.DISPLAY_EXPLANATION_BG,
                 fg=const.DISPLAY_EXPLANATION_FG,
                 font=const.DISPLAY_EXPLANATION_2_FONT,
-                # widthオプションはコメントアウト
             )
             self.explanation_label.pack(
                 pady=(const.DISPLAY_EXPLANATION_MENU_LABEL_IPADY + 50, 0),
                 ipadx=10,
-                # fillオプションはコメントアウト
             )
 
-        # テキストを改行で処理してから設定
-        processed_text = self.insert_newlines(const.DISPLAY_EXPLANATION_NUMBER[self.i])
+        # 右手/左手ラベルの作成と配置
+        if not hasattr(self, "hand_label"):
+            self.hand_label = Label(
+                self,
+                bg=const.DISPLAY_EXPLANATION_BG,
+                fg=const.DISPLAY_EXPLANATION_FG,
+                font=const.DISPLAY_EXPLANATION_FONT,
+            )
+            self.hand_label.pack(pady=(10, 0))
+
+        # self.iの値に応じてラベルのテキストを更新
+        if self.i <= 35:
+            menu_text = const.DISPLAY_POSE_NUMBER[self.i]
+            explanation_text = const.DISPLAY_EXPLANATION_NUMBER[self.i]
+        elif 36 <= self.i <= 71:
+            # 36から71の範囲では、0からのインデックスを使用
+            menu_text = const.DISPLAY_POSE_NUMBER[self.i - 36]
+            explanation_text = const.DISPLAY_EXPLANATION_NUMBER[self.i - 36]
+        else:
+            # self.iが72以上の場合
+            menu_text = "FINISH!"
+            explanation_text = "THANK YOU"
+
+        self.menu_label.config(text=menu_text)
+        processed_text = self.insert_newlines(explanation_text)
         self.explanation_label.config(text=processed_text)
+
+        # self.iの値に応じて右手/左手ラベルのテキストを設定
+        if self.i <= 35:
+            self.hand_label.config(text="RIGHT HAND")
+        elif 36 <= self.i <= 71:
+            self.hand_label.config(text="LEFT HAND")
+        else:
+            # 71を超えた際にラベルを削除
+            self.hand_label.config(text="")
 
     def setup_buttons(self):
         # Captureボタンのセットアップ
@@ -106,8 +147,8 @@ class CaptureWindow(tk.Frame):
         # Settingボタンのセットアップ
         Button(
             self,
-            text="Setting",
-            command=self.open_setting,
+            text="Back ",
+            command=self.back_pose,
             font=const.CAPTURE_BUTTON_FONT,
             width=const.CAPTURE_BUTTON_WIDTH,
             height=const.CAPTURE_BUTTON_HEIGHT,
@@ -130,15 +171,27 @@ class CaptureWindow(tk.Frame):
         self.camera_label.image = photo
 
     def display_instraction_img(self):
-        cv2.imread(os.path.join(self.current_dir, const.INSTRACTION_IMAGE_PATH))
+        filename = f"{self.i}.jpg"
+        instraction_img = cv2.imread(os.path.join(self.current_dir, "data", filename))
+        instraction_img = cv2.cvtColor(instraction_img, cv2.COLOR_BGR2RGB)
+
+        # 画像のサイズを4分の1にする
+        height, width = instraction_img.shape[:2]
+        instraction_img = cv2.resize(instraction_img, (width // 3, height // 3))
+
+        instraction_img_2 = Image.fromarray(instraction_img)
+        instraction_photo = ImageTk.PhotoImage(image=instraction_img_2)
+        self.instraction_label.config(image=instraction_photo)
+        self.instraction_label.image = instraction_photo
 
     def capture_image(self):
-        self.create_directory("capture_img")
-        filename = f"capture_Pose{int(self.i)}.jpg"
-        self.save_path = os.path.join(self.current_dir, "capture_img", filename)
+        self.create_directory("to_process")
+        filename = f"{int(self.i)}.jpg"
+        self.save_path = os.path.join(self.current_dir, "to_process", filename)
         cv2.imwrite(self.save_path, self.frame)
         self.i += 1
         self.setup_display_explanation()
+        self.display_instraction_img()
 
     def create_directory(self, dir_name):
         dir_path = os.path.join(self.current_dir, dir_name)
@@ -148,6 +201,11 @@ class CaptureWindow(tk.Frame):
     def setup_camera(self):
         self.cameras = camera_setup.get_cameras()
         return self.cameras[0][0]
+
+    def back_pose(self):
+        self.i -= 1
+        self.setup_display_explanation()
+        self.display_instraction_img()
 
     def open_setting(self):
         # カメラ設定ウィンドウの作成
